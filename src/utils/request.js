@@ -9,6 +9,8 @@
     baseURL:'http://ttapi.research.itcast.cn/'
  })
 
+//  请求拦截器
+// 响应拦截器
 
 //  导出
 export default request
