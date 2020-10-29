@@ -10,11 +10,11 @@ const routes = [
     path:'/login',
     component:()=>import('../views/login/Login.vue')
   },
-  {
+  {//一级路由渲染到根组件中的router-view中
     path:'/',
     component:()=>import('../views/layout/Layout.vue'),
     children:[
-      {
+      {//子路由渲染到父路由的router-view中
         name:'home',
         path:'',//默认子路由
         component:()=>import('../views/home/Home.vue')
