@@ -16,6 +16,7 @@
     :show-error-message='false'>
       <van-field
         v-model="user.mobile"
+        center
         icon-prefix="toutiao"
         left-icon="shouji"
         :rules="userFormRules.mobile"
@@ -24,6 +25,7 @@
       <van-field
         v-model="user.code"
         clearable
+        center
         icon-prefix="toutiao"
         left-icon="yanzhengma"
         :rules="userFormRules.code"
@@ -31,9 +33,16 @@
         placeholder="请输入验证码">
           <!--发送验证码按钮  -->
           <template #button>
+            <van-count-down 
+            v-if="isCountDownShow"
+            @finish='isCountDownShow=false'
+            :time="1000*60" format="ss s" />
             <van-button 
+            v-else
             @click.prevent="onSendCode"
-            class="send-btn" size="small" round>发送验证码</van-button>
+            class="send-btn" 
+            :loading="isSendCodeLoading"
+            size="small" round>发送验证码</van-button>
           </template>
         </van-field>
         <!-- 登录按钮 -->
@@ -50,7 +59,7 @@
 
 <script>
 
-import {login} from '../../api/user.js'
+import {login,sendCode} from '../../api/user.js'
 
 export default {
   name: 'Login',
@@ -60,7 +69,7 @@ export default {
     return {
         //用户信息 
         user:{
-          mobile:'',//手机号
+          mobile:'13911111111',//手机号
           code:''//验证码
         },
         // 用户表单验证规则
@@ -73,7 +82,11 @@ export default {
              {required: true, message: '请输入验证码' },
             {pattern:/\d{6}/,message:'验证码格式错误'}
           ]
-        }
+        },
+        // 控制倒计时和发送验证码的显示与隐藏
+        isCountDownShow:false,
+        // 发送验证码按钮的loading状态
+        isSendCodeLoading:false
   }
   },
   computed: {},
@@ -92,10 +105,13 @@ export default {
       // 2.封装请求方法
       // 3.请求调用登录
       try{
-        const res=await login(this.user)
+        const {data:res}=await login(this.user)
       // 4.处理响应结果
         console.log(res)
+        console.log(res.data)
         this.$toast.success('登录成功')
+        // 将后端返回的用户登录状态（token等信息）放到vuex容器中
+        this.$store.commit('setUser',res.data)
       }catch(err){
         this.$toast.fail('登录失败,手机号或验证码错误',err)
       }
@@ -113,18 +129,33 @@ export default {
     async onSendCode(){
       // 校验手机号码
       try{
-          const validateRes= await this.$refs.userFormRef.validate('mobile')
-          // console.log(validateRes)
+          await this.$refs.userFormRef.validate('mobile')
+           // 验证通过--->请求发送验证码--->用户接收短信--->输入验证码--->请求登录
+         this.isSendCodeLoading=true  //展示按钮的loading状态，防止网络慢用户多次触发发送行为
+         await sendCode(this.user.mobile)
+          // 请求发送验证码--->隐藏发送验证码按钮，显示倒计时
+          this.isCountDownShow=true
+          // 倒计时结束--->隐藏倒计时，显示发送验证码按钮(通过监听倒计时组件的finish事件)
       }catch(err){
-        // console.log(err)
+        // try里面的任何代码错误都会进入到catch
+        // 不同的错误需要有不同的错误提示，通过判断完成
+        let message=''  //错误提示消息
+        if(err && err.response && err.response.status===429){
+          // console.log(dir(err))
+          message='发送太频繁了，请稍后重试'
+        }else if(err.name==='mobile'){
+          message=err.message
+        }else{
+          message='发送失败，请稍后重试'
+        }
+        // 提示用户
         this.$toast({
-           message:err.message,
+           message,
            position:'top'
         })
       }
-      // 验证通过--->请求发送验证码--->用户接收短信--->输入验证码--->请求登录
-      // 请求发送验证码--->隐藏发送验证码按钮，显示倒计时
-      // 倒计时结束--->隐藏倒计时，显示发送验证码按钮
+      // 无论发送验证码成功还是失败，最后都要关闭发送按钮的loading状态
+      this.isSendCodeLoading=false
     }
   }
 }

@@ -13,3 +13,13 @@ import request from '../utils/request.js'
         data
     })
  }
+
+ /**
+  * 发送短信验证码
+  */
+ export const sendCode=mobile=>{
+     return request({
+         method:'GET',
+         url:`/app/v1_0/sms/codes/${mobile}`
+     })
+ }
