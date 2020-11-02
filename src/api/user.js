@@ -2,6 +2,8 @@
  * 用户相关模块
  */
 import request from '../utils/request.js'
+// 非组件模块中需手动加载store
+// import store from '../store/index.js'
 
  /**
   * 注册、登录
@@ -23,3 +25,16 @@ import request from '../utils/request.js'
          url:`/app/v1_0/sms/codes/${mobile}`
      })
  }
+
+/**
+ * 获取登录用户信息
+ * */  
+export const getCurrentUser=()=>{
+    return request({
+        method:'GET',
+        url:'/app/v1_0/user',
+        // headers:{
+        //     Authorization:`Bearer ${store.state.user.token}`
+        // }
+    })
+}

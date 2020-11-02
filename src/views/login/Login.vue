@@ -70,7 +70,7 @@ export default {
         //用户信息 
         user:{
           mobile:'13911111111',//手机号
-          code:''//验证码
+          code:'246810'//验证码
         },
         // 用户表单验证规则
         userFormRules:{
@@ -112,6 +112,8 @@ export default {
         this.$toast.success('登录成功')
         // 将后端返回的用户登录状态（token等信息）放到vuex容器中
         this.$store.commit('setUser',res.data)
+         // 登录成功，跳转回原来的页面
+         this.$router.back()
       }catch(err){
         this.$toast.fail('登录失败,手机号或验证码错误',err)
       }
