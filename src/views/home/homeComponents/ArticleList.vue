@@ -10,7 +10,11 @@
             @load="onLoad"
             :finished="finished"
             finished-text="没有更多了">
-            <van-cell v-for="(article,index) in articles" :key="index" :title="article.title"></van-cell>
+            <!-- 文章展示 -->
+            <article-item 
+            :article="article"
+            v-for="(article,index) in articles" 
+            :key="index" />
         </van-list>
     </van-pull-refresh>
   </div>
@@ -20,9 +24,13 @@
 
 import { getArticles } from '../../../api/article.js'
 
+import ArticleItem from '../../../components/article-item/ArticleItem.vue'
+
 export default {
   name: 'ArticleList',
-  components: {},
+  components: {
+    ArticleItem
+   },
   props: {
     channel:{
         type:Object,
@@ -55,6 +63,7 @@ export default {
             // 2.把数据放到articles数组中
             const {results}=res.data
             this.articles.push(...results)
+            // console.log(this.articles)
             // 3.设置本次加载状态结束（才可以判断是否需要加载下一次）
             this.loading=false
             // 4.数据全部加载完成
