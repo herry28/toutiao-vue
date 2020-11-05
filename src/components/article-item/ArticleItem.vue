@@ -18,7 +18,7 @@
         <div class="label-wrap">
             <span>{{article.aut_name}}</span>
             <span>{{article.comm_count}}评论</span>
-            <span>{{article.pubdate | relativeTime}}</span>
+            <span>{{article.pubdate }}</span>
         </div>
     </div>
         <!--1张图片区域  -->
