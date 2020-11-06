@@ -37,7 +37,11 @@
       style="height:100%"
       position="bottom">
       <!-- 频道编辑组件 -->
-      <channel-edit :my-channels="channels"/>
+      <channel-edit 
+      @close="isChannelEditShow=false"
+      @update-active="onUpdateActive"
+      :active="active"
+      :my-channels="channels"/>
       </van-popup>
   </div>
 </template>
@@ -49,6 +53,9 @@ import {getUserChannels} from '../../api/user.js'
 
 import ArticleList from './homeComponents/ArticleList.vue'
 import ChannelEdit from './homeComponents/ChannelEdit.vue'
+
+import {mapState} from 'vuex'
+import {getItem} from '../../utils/storage.js'
 
 export default {
   name: 'Home',
@@ -64,7 +71,9 @@ export default {
       isChannelEditShow:true,//控制频道编辑页面的显示与隐藏
     }
   },
-  computed: {},
+  computed: {
+  ...mapState(['user'])
+},
   watch: {},
   created () { 
     this.loadChannels()
@@ -73,9 +82,28 @@ export default {
   methods: {
     //获取用户频道列表 
     async loadChannels(){
-     const {data:res} = await getUserChannels()
-     this.channels=res.data.channels
+      let channels=[]
+      if(this.user){//用户已登录，请求获取线上的频道列表数据
+         const {data:res} = await getUserChannels()
+         channels=res.data.channels
+      }else{//没有登录，判断是否有本地存储的频道列表数据
+        const localChannels=getItem('my-channels')
+        if(localChannels){//如果有本地存储的，则使用本地存储的
+          channels=localChannels
+        }else{//用户没有登录，也没有本地存储的，就请求默认推荐的频道列表
+          const {data:res} = await getUserChannels()
+          this.channels=res.data.channels
+        }
+      }
+      // 把处理好的数据放到data中，供模板使用
+      this.channels=channels
+    
+    //  const {data:res} = await getUserChannels()
+    //  this.channels=res.data.channels
     //  console.log(res)
+    },
+    onUpdateActive(index){
+      this.active=index
     }
   }
 }
@@ -128,5 +156,6 @@ export default {
     width: 33px;
     flex-shrink: 0;
   }
+  
 }
 </style>
