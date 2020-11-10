@@ -14,11 +14,17 @@
     <!-- /搜索栏 -->
 
     <!-- 搜索结果 -->
-    <search-result v-if="isSearchResultShow" />
+    <search-result 
+        v-if="isSearchResultShow" 
+        :search-text="searchText"
+    />
     <!-- /搜索结果 -->
 
     <!-- 联想建议 -->
-    <search-suggestion v-else-if="searchText" />
+    <search-suggestion 
+        v-else-if="searchText"
+        :search-text="searchText"
+     />
     <!-- /联想建议 -->
 
     <!-- 历史记录 -->
@@ -56,7 +62,7 @@ export default {
   methods: {
     onSearch(){
         // 展示搜索结果
-        isSearchResultShow=true
+        this.isSearchResultShow=true
     }
   }
 }

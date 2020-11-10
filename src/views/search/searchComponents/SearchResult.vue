@@ -7,24 +7,34 @@
         @load="onLoad"
     >
         <van-cell 
-            v-for="item in list" 
-            :key="item" 
-            :title="item"
+            v-for="(article,index) in searchResultList" 
+            :key="index" 
+            :title="article.title"
         />
     </van-list>
   </div>
 </template>
 
 <script>
+
+import {getSearchResults} from '../../../api/search.js'
+
 export default {
   name: 'SearchResult',
   components: {},
-  props: {},
+  props: {
+    searchText:{
+        type:String,
+        required:true
+    }
+},
   data () {
     return {
         loading:false,
         finished:false,
-        list:[]
+        searchResultList:[],
+        page:1,//页码
+        perPage:10//每页大小
     }
   },
   computed: {},
@@ -32,18 +42,27 @@ export default {
   created () { },
   mounted () { },
   methods: {
-    onLoad(){
-        setTimeout(()=>{
-            for(let i=0;i<this.list.length;i++){
-                this.list.push(this.list.length-1)
-            }
-            this.loading=false
-            if(this.list.length>=40){
-                this.finished=true
-            }
-        },1000)
+   async onLoad(){
+        //1.请求获取数据
+        const {data:res} = await getSearchResults({
+            page:this.page,//页码
+            per_page:this.perPage,//每页大小
+            q:this.searchText//搜索关键字
+        })
+        // 2.将数据放到data中
+        // console.log(res)
+        const {results}=res.data //搜索结果数据
+        this.searchResultList.push(...results)
+        // 3.关闭本次的loading
+        this.loading=false
+        // 4.判断是否还有数据
+        if(results.length){  // 若有，则更新获取下一页数据的页码；
+            this.page++
+        }else{// 若没有，则把finished设置为true，关闭加载更多
+            this.finished=true
+        }  
     }
-}
+  }
 }
 </script>
 
