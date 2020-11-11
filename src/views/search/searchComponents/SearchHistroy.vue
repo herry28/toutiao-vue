@@ -11,11 +11,13 @@
         <van-icon name="delete"/>
     </van-cell>
     <van-cell 
-        title="hello"
-    />
-    <van-cell 
-        title="hello"
-    />
+        :title="item"
+        v-for="(item,index) in searchHistroies"
+        :key="index"
+    >
+        <van-icon name="close" />
+    </van-cell>
+   
   </div>
 </template>
 
@@ -23,7 +25,12 @@
 export default {
   name: 'SearchHistroy',
   components: {},
-  props: {},
+  props: {
+    searchHistroies:{
+        type:Array,
+        required:true
+    }
+},
   data () {
     return {}
   },

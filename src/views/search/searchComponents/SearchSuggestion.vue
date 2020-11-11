@@ -2,6 +2,7 @@
   <div class="search-suggestion">
     <van-cell
         icon="search"
+        @click="$emit('search',item)"
         v-for="(item,index) in suggestions"
         :key="index"
     >

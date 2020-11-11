@@ -29,3 +29,14 @@ export const getSearchResults=params=>{
         params
     })
 }
+
+
+/**
+ * 获取搜索历史记录
+ * */  
+export const getSearchHistrois=()=>{
+    return request({
+        method:'GET',
+        url:'/app/v1_0/search/histories',
+    })
+}
