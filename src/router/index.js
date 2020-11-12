@@ -40,6 +40,12 @@ const routes = [
     name:'search',
     path:'/search',
     component:()=>import('../views/search/Search.vue')
+  },
+  {
+    name:'article',
+    path:'/article/:articleId',
+    component:()=>import('../views/article/Article.vue'),
+    props:true
   }
 ]
 

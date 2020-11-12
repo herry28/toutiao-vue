@@ -107,8 +107,8 @@ export default {
       try{
         const {data:res}=await login(this.user)
       // 4.处理响应结果
-        console.log(res)
-        console.log(res.data)
+        // console.log(res)
+        // console.log(res.data)
         this.$toast.success('登录成功')
         // 将后端返回的用户登录状态（token等信息）放到vuex容器中
         this.$store.commit('setUser',res.data)
