@@ -24,6 +24,8 @@
             class="follow-btn"
             :type="articleDetail.is_followed ? 'default' : 'info'"
             :icon="articleDetail.is_followed ? '' : 'plus'"
+            :loading="isFollowLoading"
+            @click="onFollow"
             fit="cover"
             round
             size="small"
@@ -33,11 +35,16 @@
 
     <!-- 文章正文 -->
     <div 
+        ref="article-content"
         class="markdown-body"
         v-html="articleDetail.content"
     >
     </div>
     <!-- /文章正文 -->
+
+    <!-- 底部区域 -->
+    <article-bottom  :article="articleDetail" />
+    <!-- /底部区域 -->
   </div>
 </template>
 
@@ -45,11 +52,16 @@
 
 import './github-markdown.css'
 import { getArticleById } from '../../api/article.js'
+import { addFollow,deleteFollow } from '../../api/user.js'
+import {ImagePreview} from 'vant'
 
+import ArticleBottom from './articleComponents/ArticleBottom.vue'
 
 export default {
   name: 'Article',
-  components: {},
+  components: {
+    ArticleBottom
+},
   props: {
     articleId:{
         type:[String,Number,Object],
@@ -59,6 +71,7 @@ export default {
   data () {
     return {
         articleDetail:{},//文章详情信息
+        isFollowLoading:false,//关注用户按钮的loading状态
 }
   },
   computed: {},
@@ -70,14 +83,64 @@ export default {
   methods: {
    async loadArticle(){
       let {data:res} = await getArticleById(this.articleId)
-       console.log(res)
+    //    console.log(res)
        this.articleDetail=res.data
+
+        //调用处理图片预览的函数
+        this.$nextTick(()=>{
+            this.handlePreviewImage()
+        }) 
+       
+    },
+    
+    //处理图片预览 
+    handlePreviewImage(){
+         //实现文章图片预览效果：
+        // 1.获取文章内容的dom容器
+        const articleContent = this.$refs['article-content']
+        // console.log(articleContent)
+        // 2.得到所有的img标签
+        const imgs=articleContent.querySelectorAll('img')
+        // console.log(imgs)
+        const imgPaths=[]//收集文章中所有图片的路径
+        // 3.循环img列表，给img注册点击事件
+        imgs.forEach((img,index)=>{
+            imgPaths.push(img.src) 
+            img.onclick=()=>{// 4.在事件处理函数中调用ImagePreview()预览
+                ImagePreview({
+                    images:imgPaths,//预览图片的路径列表
+                    startPosition:index//起始位置
+                })
+            }
+        })
+        
+    },
+
+    // 点击关注用户按钮时触发
+    async onFollow(){
+        this.isFollowLoading=true//展示loading状态
+        if(this.articleDetail.is_followed){//如果用户已关注，则取消关注
+           await deleteFollow(this.articleDetail.aut_id) //发请求取消关注
+        }else{//没有关注，则添加关注
+            await addFollow(this.articleDetail.aut_id)//发请求关注
+        }
+        this.articleDetail.is_followed =!this.articleDetail.is_followed//更新视图
+        this.isFollowLoading=false//关闭loading状态
     }
 }
 }
 </script>
 
 <style scoped lang="less">
+.article-container{
+    padding-top: 51px;
+}
+.app-nav-bar{
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+}
 .title{
     font-size:20px;
     color:#3a3a3a;
@@ -104,4 +167,5 @@ export default {
         height: 29px;
     }
 }
+
 </style>
