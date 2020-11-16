@@ -9,38 +9,47 @@
     />
     <!-- /导航栏 -->
 
-    <!-- 文章标题及作者信息 -->
-    <h1 class="title">{{articleDetail.title}}</h1>
-    <van-cell center class="user-info">
-        <div slot="title" class="name">{{articleDetail.aut_name}}</div>
-        <van-image 
-            slot="icon"
-            class="avatar"
-            round
-            :src="articleDetail.aut_photo"
-        />
-        <div slot="label" class="pubdate">{{articleDetail.pubdate}}</div>
-        <van-button
-            class="follow-btn"
-            :type="articleDetail.is_followed ? 'default' : 'info'"
-            :icon="articleDetail.is_followed ? '' : 'plus'"
-            :loading="isFollowLoading"
-            @click="onFollow"
-            fit="cover"
-            round
-            size="small"
-        >{{articleDetail.is_followed ? '已关注' : '关注'}}</van-button>
-    </van-cell>
-    <!-- /文章标题及作者信息 -->
+    <div class="article-wrap">
+          <!-- 文章标题及作者信息 -->
+        <h1 class="title">{{articleDetail.title}}</h1>
+        <van-cell center class="user-info">
+            <div slot="title" class="name">{{articleDetail.aut_name}}</div>
+            <van-image 
+                slot="icon"
+                class="avatar"
+                round
+                :src="articleDetail.aut_photo"
+            />
+            <div slot="label" class="pubdate">{{articleDetail.pubdate}}</div>
+            <van-button
+                class="follow-btn"
+                :type="articleDetail.is_followed ? 'default' : 'info'"
+                :icon="articleDetail.is_followed ? '' : 'plus'"
+                :loading="isFollowLoading"
+                @click="onFollow"
+                fit="cover"
+                round
+                size="small"
+            >{{articleDetail.is_followed ? '已关注' : '关注'}}</van-button>
+        </van-cell>
+        <!-- /文章标题及作者信息 -->
 
-    <!-- 文章正文 -->
-    <div 
-        ref="article-content"
-        class="markdown-body"
-        v-html="articleDetail.content"
-    >
+        <!-- 文章正文 -->
+        <div 
+            ref="article-content"
+            class="markdown-body"
+            v-html="articleDetail.content"
+        >
+        </div>
+        <!-- /文章正文 -->
+
+        <!-- 文章评论列表 -->
+        <comment-list 
+            :source="articleId"
+        />
+        <!-- /文章评论列表 -->
     </div>
-    <!-- /文章正文 -->
+  
 
     <!-- 底部区域 -->
     <article-bottom  :article="articleDetail" />
@@ -56,11 +65,13 @@ import { addFollow,deleteFollow } from '../../api/user.js'
 import {ImagePreview} from 'vant'
 
 import ArticleBottom from './articleComponents/ArticleBottom.vue'
+import CommentList from './articleComponents/CommentList.vue'
 
 export default {
   name: 'Article',
   components: {
-    ArticleBottom
+    ArticleBottom,
+    CommentList
 },
   props: {
     articleId:{
@@ -132,8 +143,13 @@ export default {
 </script>
 
 <style scoped lang="less">
-.article-container{
-    padding-top: 51px;
+.article-wrap{
+    position: fixed;
+    left: 0;
+    right: 0;
+    top: 46px;
+    bottom: 44px;
+    overflow-y: auto;
 }
 .app-nav-bar{
     position: fixed;
