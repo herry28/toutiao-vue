@@ -11,6 +11,7 @@
             v-for="(comment,index) in commentList" 
             :key="index" :title="comment.content" 
             :comment='comment'
+            @reply-comment="$emit('reply-comment',$event)"
         />
     </van-list>
   </div>
@@ -31,11 +32,15 @@ export default {
     source:{
         type:[Number,String,Object],
         required:true
-    }
+    },
+     commentList: {
+         type:Array,
+         default:()=>[]
+     },
 },
   data () {
     return {
-        commentList: [],
+        // commentList: [],
         loading: false,
         finished: false,
         offset:null,//页码
@@ -56,6 +61,7 @@ export default {
             limit:this.limit,//每页大小
         })
         console.log(res)
+        this.$emit('update-total-count',res.data.total_count)//将评论的总条数传递出去
         // 2.把数据放到data中
         const {results}=res.data
         this.commentList.push(...results)

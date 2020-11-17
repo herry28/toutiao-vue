@@ -4,6 +4,7 @@ import router from './router'
 import store from './store'
 
 
+
 // 导入vant组件库
 import vant from 'vant'
 //导入vant组件库样式
@@ -21,7 +22,7 @@ import './style/index.less'
 // 全局注册vant
 Vue.use(vant)
 
-
+Vue.prototype.$bus=new Vue()
 Vue.config.productionTip = false
 
 
