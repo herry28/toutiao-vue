@@ -81,7 +81,15 @@
         position="bottom"
     >
         <!-- 回复评论组件 -->
-        <reply-comment />
+        <reply-comment 
+            v-if="isReplyShow"
+            @close="isReplyShow=false"
+            :comment="replyComment"
+            :article-id="articleId"
+        />
+        <!-- 这里使用v-if的目的：让组件随着弹出层的显示进行渲染和销毁，
+        防止加载过的组件不重新渲染导致数据不会重新加载
+         -->
     </van-popup>
     <!-- /回复评论的弹出层 -->
   </div>
@@ -121,6 +129,7 @@ export default {
         commentList:[],//评论列表数据
         totalCommentCount:0,//评论总条数
         isReplyShow:false,//控制回复评论弹出层的显示与隐藏
+        replyComment:{},//当前被点击回复的评论项
 }
   },
   computed: {},
@@ -187,8 +196,12 @@ export default {
     },
 
     onReplyComment(comment){
-        this.isReplyShow=true
         console.log(111,comment)
+        this.replyComment=comment //将当前被点击回复的评论项挂载到data中
+        console.log(this.replyComment)
+        // 展示回复的弹出层
+        this.isReplyShow=true
+        
     }
 }
 }

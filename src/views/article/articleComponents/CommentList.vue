@@ -33,6 +33,10 @@ export default {
         type:[Number,String,Object],
         required:true
     },
+    type:{
+        type:String,
+        default:'a'//获取文章评论-a；评论回复-c
+    },
      commentList: {
          type:Array,
          default:()=>[]
@@ -55,12 +59,12 @@ export default {
     async onLoad() {
         //  1.请求获取数据
         const {data:res} = await getComments({
-            type:'a',//评论类型，a-对文章的评论，c-对评论的回复
-            source:this.source,//文章id或评论id
+            type:this.type,//评论类型，a-对文章的评论，c-对评论的回复
+            source:this.source.toString(),//文章id或评论id
             offset:this.offset,//页码（获取评论数据的偏移量，值为评论id，表示从此id的数据向后取，不传表示从第一页开始读取数据）
             limit:this.limit,//每页大小
         })
-        console.log(res)
+        // console.log(res)
         this.$emit('update-total-count',res.data.total_count)//将评论的总条数传递出去
         // 2.把数据放到data中
         const {results}=res.data
