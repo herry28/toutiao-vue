@@ -68,7 +68,7 @@
     </van-grid>
     <!--  -->
     <van-cell title="消息通知" is-link to="" />
-    <van-cell title="小智同学" is-link to="" class="mb-4" />
+    <van-cell title="小智同学" is-link to="/user/chat" class="mb-4" />
     <van-cell 
     v-if="user" 
     @click="onLogout"

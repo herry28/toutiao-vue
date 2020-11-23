@@ -1,13 +1,21 @@
 <template>
   <div id="app">
    <!-- 一级路由出口 ,路由表中的顶层路由都是1级路由-->
-    <router-view/>
+    <keep-alive :ixclude="cachePages">
+      <router-view/>
+    </keep-alive>
   </div>
 </template>
 
 <script>
+
+import {mapState} from 'vuex'
+
 export default {
-  name:'App'
+  name:'App',
+  computed:{
+    ...mapState(['cachePages'])
+  }
 }
 </script>
 
