@@ -28,7 +28,7 @@ export default {
   watch: {},
   created () { },
   mounted () { 
-    this.$store.commit('addCachePage','Layout')
+    this.$store.commit('addCachePage','Layout')//当组件渲染后添加缓存
 },
   methods: {}
 }
